@@ -1,15 +1,14 @@
 <template>
-    <div>
-        hello
-    </div>
+  <div>
+    rank
+  </div>
 </template>
 
 <script>
-    export default {
-        
-    }
+export default {
+
+}
 </script>
 
 <style lang="scss" scoped>
-
 </style>
