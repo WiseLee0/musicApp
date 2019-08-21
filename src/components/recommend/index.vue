@@ -1,36 +1,78 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div class="slider-wrapper"
-           v-if="banners.length">
-        <slider>
-          <div v-for="item in banners"
-               :key="item.id">
-            <a :href="item.linkUrl">
-              <img :src="item.picUrl" />
-            </a>
-          </div>
-        </slider>
+    <div class="recommend-content"
+         ref="recommendContent">
+      <div>
+        <div class="slider-wrapper"
+             v-if="banners.length">
+          <slider>
+            <div v-for="item in banners"
+                 :key="item.id">
+              <a :href="item.linkUrl">
+                <img :src="item.picUrl" />
+              </a>
+            </div>
+          </slider>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li v-for="item in songList"
+                class="item"
+                :key="item.id">
+              <div class="icon">
+                <img width="60"
+                     height="60"
+                     v-lazy="item.imgurl">
+              </div>
+              <div class="text">
+                <h2 class="name"
+                    v-html="item.dissname">
+                </h2>
+                <div class="desc">
+                  <span v-html="item.creator.name"></span>
+                  <span>{{toListenNum(item.listennum)}}</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="recommend-list">
-        <h1 class="list-title">热门歌单推荐</h1>
-        <ul></ul>
+      <div class="loading-container"
+           v-show="!songList.length">
+        <loading></loading>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getBanner } from 'api/recommend';
-import Slider from 'base/slider/index';
+import { getBanner, getSongList } from 'api/recommend';
+import Slider from 'base/slider/index'
+import BScroll from '@better-scroll/core'
+import ScrollBar from '@better-scroll/scroll-bar'
+import Loading from 'base/loading/index'
+BScroll.use(ScrollBar)
+
 export default {
   data () {
     return {
-      banners: []
+      banners: [],
+      songList: [],
+      bscroll: null
     }
   },
   created () {
+    // 轮播图
     this._getBanner()
+    // 歌单列表
+    this._getSongList()
+  },
+  mounted () {
+    setTimeout(() => {
+      // 初始化滑动组件
+      this._initBscroll()
+    }, 20)
   },
   methods: {
     _getBanner () {
@@ -38,12 +80,45 @@ export default {
         if (res.code === 0) {
           this.banners = res.data.slider
         }
+        if (this.songList.length > 0) {
+          // 确保数据加载完成
+          setTimeout(() => {
+            this.bscroll.refresh()
+          }, 100)
+        }
       })
+    },
+    _getSongList () {
+      getSongList().then(res => {
+        if (res.code === 0) {
+          this.songList = res.data.list
+        }
+        if (this.banners.length > 0) {
+          // 确保数据加载完成
+          setTimeout(() => {
+            this.bscroll.refresh()
+          }, 100)
+        }
+      })
+    },
+    _initBscroll () {
+      this.bscroll = new BScroll(this.$refs.recommendContent, {
+        scrollY: true,
+        scrollbar: true,
+        probeType: 2,
+        click: true
+      })
+    },
+    toListenNum (num) {
+      if (num < 10000) return num
+      num = (num / 10000).toFixed(2)
+      return `${num}万`
     }
   },
   components: {
     Slider,
-  },
+    Loading
+  }
 }
 </script>
 
@@ -89,6 +164,9 @@ export default {
             margin-bottom 10px
             color $color-text
           .desc
+            display flex
+            flex-direction row
+            justify-content space-between
             color $color-text-d
     .loading-container
       position absolute

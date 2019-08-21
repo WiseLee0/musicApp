@@ -56,7 +56,8 @@ export default {
       this._addItemClass()
       this._initSlider()
       this._initDots()
-      this._autoGoNext()
+      if (this.autoPlay)
+        this._autoGoNext()
     }, 20)
     // 监听窗体缩放，改变轮播图
     window.addEventListener('resize', () => {
@@ -98,7 +99,8 @@ export default {
         clearTimeout(this.playTimer)
       })
       this.slider.on('scrollEnd', () => {
-        this._autoGoNext()
+        if (this.autoPlay)
+          this._autoGoNext()
       })
     },
     _initDots () {

@@ -27,6 +27,33 @@ module.exports = {
         })
       })
 
+      // 获取recommend歌单数据
+      app.get('/api/getSongList', function (req, res) {
+        var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+        axios.get(url, {
+          headers: {
+            Origin: 'https://y.qq.com',
+            Referer: 'https://y.qq.com/portal/playlist.html'
+          },
+          params: req.query
+        }).then(result => {
+          res.json(result.data)
+        })
+      })
+
+      // 获取歌手列表数据
+      app.get('/api/getSingerList', function (req, res) {
+        var url = 'ttps://u.y.qq.com/cgi-bin/musicu.fcg'
+        axios.get(url, {
+          headers: {
+            Origin: 'https://y.qq.com',
+            Referer: 'https://y.qq.com/portal/singer_list.html'
+          },
+          params: req.query
+        }).then(result => {
+          res.json(result.data)
+        })
+      })
     }
   }
 }
