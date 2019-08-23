@@ -6,7 +6,8 @@
         <h2 class="list-group-title">{{tagTitle}}</h2>
         <li v-for="item in singers"
             :key="item.id"
-            class="list-group-item">
+            class="list-group-item"
+            @click="selectItem(item)">
           <img v-lazy="item.singer_pic"
                class="avatar" />
           <span class="name">{{item.singer_name}}</span>
@@ -63,7 +64,7 @@ export default {
       listShow: true,
       groupShow: false,
       getSingers: [],
-      scroll: null
+      bscroll: null
     }
   },
   props: {
@@ -76,13 +77,13 @@ export default {
   },
   methods: {
     _initScroll () {
-      this.scroll = new BScroll(this.$refs.listview, {
+      this.bscroll = new BScroll(this.$refs.listview, {
         scrollY: true,
         click: true,
-        probeType: 2
+        probeType: 3
       })
       // 监听滚轮，控制tagTitle的显示
-      this.scroll.on('scroll', e => {
+      this.bscroll.on('scroll', e => {
         if (e.y > 0) {
           this.listShow = false
         } else {
@@ -122,6 +123,9 @@ export default {
         }, 20);
       })
       this.groupShow = false
+    },
+    selectItem (item) {
+      this.$emit('select', item)
     }
   },
   computed: {
@@ -137,6 +141,9 @@ export default {
       if (this.getSingers.length > 0) return this.getSingers
       else return this.data
     }
+  },
+  beforeDestroy () {
+    this.bscroll.destroy()
   },
   components: {
     Loading,

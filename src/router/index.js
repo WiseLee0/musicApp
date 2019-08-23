@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import SingerDetail from 'components/singer-detail/index'
 
 const Recommend = (resolve) => {
   import('components/recommend/index').then((module) => {
@@ -39,6 +40,12 @@ export default new Router({
     component: Search
   }, {
     path: '/singer',
-    component: Singer
+    component: Singer,
+    children: [
+      {
+        path: ':id',
+        component: SingerDetail
+      }
+    ]
   }]
 })

@@ -105,7 +105,7 @@ export default {
       this.bscroll = new BScroll(this.$refs.recommendContent, {
         scrollY: true,
         scrollbar: true,
-        probeType: 2,
+        probeType: 1,
         click: true
       })
     },
@@ -114,6 +114,9 @@ export default {
       num = (num / 10000).toFixed(2)
       return `${num}万`
     }
+  },
+  beforeDestroy () {
+    this.bscroll.destroy()
   },
   components: {
     Slider,

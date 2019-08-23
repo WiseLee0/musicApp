@@ -54,6 +54,34 @@ module.exports = {
           res.json(result.data)
         })
       })
+
+      // 获取歌手歌曲数据
+      app.get('/api/getSingerSongs', function (req, res) {
+        var url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
+        axios.get(url, {
+          headers: {
+            Origin: 'https://i.y.qq.com',
+            Referer: 'https://i.y.qq.com/n2/m/share/details/singer.html'
+          },
+          params: req.query
+        }).then(result => {
+          res.json(result.data)
+        })
+      })
+
+      // 获取歌曲的vkey
+      app.get('/api/getSongVkey', function (req, res) {
+        var url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+        axios.get(url, {
+          headers: {
+            Origin: 'https://y.qq.com',
+            Referer: 'https://y.qq.com/portal/player.html'
+          },
+          params: req.query
+        }).then(result => {
+          res.json(result.data)
+        })
+      })
     }
   }
 }
