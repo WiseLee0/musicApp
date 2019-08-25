@@ -24,7 +24,8 @@
     <div class="list"
          ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs"
+                   @select="selectItem"></song-list>
       </div>
       <div class="loading-container"
            v-show="!songs.length">
@@ -39,6 +40,7 @@ import SongList from 'base/song-list/index'
 import BScroll from '@better-scroll/core'
 import Loading from 'base/loading/index'
 import PullUp from '@better-scroll/pull-up'
+import { mapActions } from 'vuex'
 BScroll.use(PullUp)
 export default {
   data () {
@@ -123,7 +125,15 @@ export default {
     pullingUpHandler () {
       this.$emit('pullData')
       this.bscroll.finishPullUp()
-    }
+    },
+    // 子组件的派发事件
+    selectItem (song, index) {
+      this.selectPlay({
+        list: this.songs,
+        index: index
+      })
+    },
+    ...mapActions(['selectPlay'])
   },
   // 销毁scroll
   beforeDestroy () {

@@ -1,4 +1,10 @@
 const state = {
-  singer: {}
+  singer: {}, // 歌手
+  playing: false, // 播放状态
+  fullScreen: false, // 全屏
+  playList: [], // 播放列表
+  sequenceList: [], // 顺序列表
+  mode: 0, // 播放模式 顺序播放0 循环单曲1 随机播放2 
+  currentIndex: -1 // 播放索引
 }
 export default state

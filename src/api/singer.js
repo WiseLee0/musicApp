@@ -100,7 +100,7 @@ export function getSongVkey (songmid) {
     params: data
   }).then(res => {
     // 返回vkey
-    return Promise.resolve(res.data.req_0.data.midurlinfo[0].vkey)
+    return Promise.resolve(res.data.req_0.data.midurlinfo[0].purl)
   })
 }
 // jsonp 方法获取vkey 这种方法应该快失效了
