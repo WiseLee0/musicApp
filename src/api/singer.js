@@ -1,8 +1,12 @@
 import axios from 'axios'
-import { commonParams } from './config'
-import { jsonp } from 'common/js/jsonp'
+import {
+  commonParams
+} from './config'
+import {
+  jsonp
+} from 'common/js/jsonp'
 
-export function getSingerList (letter, area = -100) {
+export function getSingerList(letter, area = -100) {
 
   const url = '/api/getSingerList'
   const data = Object.assign({}, commonParams, {
@@ -12,13 +16,11 @@ export function getSingerList (letter, area = -100) {
     platform: 'yqq.json',
     needNewCode: 0,
     data: {
-      "comm":
-      {
+      "comm": {
         "ct": 24,
         "cv": 0
       },
-      "singerList":
-      {
+      "singerList": {
         "module": "Music.SingerListServer",
         "method": "get_singer_list",
         "param": {
@@ -38,7 +40,7 @@ export function getSingerList (letter, area = -100) {
     return Promise.resolve(res.data)
   })
 }
-export function getSingerSongs (singer) {
+export function getSingerSongs(singer) {
   const url = '/api/getSingerSongs'
   const data = Object.assign({}, commonParams, {
     uin: 0,
@@ -57,7 +59,7 @@ export function getSingerSongs (singer) {
     return Promise.resolve(res.data)
   })
 }
-export function getSongVkey (songmid) {
+export function getSongVkey(songmid) {
   const url = '/api/getSongVkey'
   const data = Object.assign({}, commonParams, {
     '-': 'getplaysongvkey06362299039050012',
@@ -66,8 +68,7 @@ export function getSongVkey (songmid) {
     platform: 'yqq.json',
     needNewCode: 0,
     data: {
-      "req":
-      {
+      "req": {
         "module": "CDN.SrfCdnDispatchServer",
         "method": "GetCdnDispatch",
         "param": {
@@ -75,8 +76,8 @@ export function getSongVkey (songmid) {
           "calltype": 0,
           "userip": ""
         }
-      }, "req_0":
-      {
+      },
+      "req_0": {
         "module": "vkey.GetVkeyServer",
         "method": "CgiGetVkey",
         "param": {
@@ -104,7 +105,7 @@ export function getSongVkey (songmid) {
   })
 }
 // jsonp 方法获取vkey 这种方法应该快失效了
-export function jsonpVkey (songmid) {
+export function jsonpVkey(songmid) {
   const url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
   const data = Object.assign({}, {
     callback: 'musicJsonCallback',

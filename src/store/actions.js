@@ -18,3 +18,12 @@ export const selectPlay = function ({ commit, state }, { list, index }) {
   commit(types.SET_FULLSCREEN, true)
   commit(types.SET_PlAYING, true)
 }
+export const randomPlay = function ({ commit }, { list }) {
+  commit(types.SET_SEQUENCELIST, list)
+  let randomList = shuffle(list)
+  commit(types.SET_PLAYLIST, randomList)
+  commit(types.SET_MODE, 2)
+  commit(types.SET_CURRENTINDEX, 0)
+  commit(types.SET_FULLSCREEN, true)
+  commit(types.SET_PlAYING, true)
+}

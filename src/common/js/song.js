@@ -1,3 +1,9 @@
+import {
+  getLyric
+} from 'api/lyric'
+import {
+  Base64
+} from 'js-base64'
 export default class Song {
   constructor(props) {
     this.id = 0
@@ -11,8 +17,23 @@ export default class Song {
     Object.assign(this, props)
     return this
   }
+  getLyric() {
+    if (this.lyric) return Promise.resolve(this.lyric)
+    return new Promise((resolve, reject) => {
+
+      getLyric(this.mid).then(res => {
+        if (res.code === 0) {
+          this.lyric = Base64.decode(res.lyric)
+          resolve(this.lyric)
+        } else {
+          reject('no lyric')
+        }
+      })
+
+    })
+  }
 }
-export function createSong (musicData) {
+export function createSong(musicData) {
   return new Song({
     id: musicData.songid,
     mid: musicData.songmid,
@@ -24,7 +45,7 @@ export function createSong (musicData) {
   })
 }
 
-function filterSinger (singer) {
+function filterSinger(singer) {
   let ret = []
   if (singer.length === 0) {
     return ''
