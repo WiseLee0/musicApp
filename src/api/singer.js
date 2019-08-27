@@ -2,9 +2,7 @@ import axios from 'axios'
 import {
   commonParams
 } from './config'
-import {
-  jsonp
-} from 'common/js/jsonp'
+import jsonp from 'common/js/jsonp'
 
 export function getSingerList(letter, area = -100) {
 

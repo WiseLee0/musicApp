@@ -67,7 +67,6 @@ export default {
   methods: {
     _addItemClass() {
       this.children = this.$refs.sliderGroup.children;
-      console.log(this.children)
       for (let i = 0; i < this.children.length; i++) {
         const child = this.children[i];
         addClass(child, "slider-item");

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import SingerDetail from 'components/singer-detail/index'
 
 const Recommend = (resolve) => {
   import('components/recommend/index').then((module) => {
@@ -23,6 +22,24 @@ const Singer = (resolve) => {
   })
 }
 
+const SingerDetail = (resolve) => {
+  import('components/singer-detail/index').then((module) => {
+    resolve(module)
+  })
+}
+
+const Disc = (resolve) => {
+  import('components/disc/index').then((module) => {
+    resolve(module)
+  })
+}
+
+const TopList = (resolve) => {
+  import('components/top-list/index').then((module) => {
+    resolve(module)
+  })
+}
+
 Vue.use(Router)
 
 export default new Router({
@@ -31,21 +48,27 @@ export default new Router({
     redirect: '/Recommend'
   }, {
     path: '/recommend',
-    component: Recommend
+    component: Recommend,
+    children: [{
+      path: ':id',
+      component: Disc
+    }]
   }, {
     path: '/rank',
-    component: Rank
+    component: Rank,
+    children: [{
+      path: ':id',
+      component: TopList
+    }]
   }, {
     path: '/search',
     component: Search
   }, {
     path: '/singer',
     component: Singer,
-    children: [
-      {
-        path: ':id',
-        component: SingerDetail
-      }
-    ]
+    children: [{
+      path: ':id',
+      component: SingerDetail
+    }]
   }]
 })

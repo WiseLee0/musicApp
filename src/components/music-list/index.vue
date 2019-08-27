@@ -16,7 +16,7 @@
     <div class="bg-layer" ref="layer"></div>
     <div class="list" ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs" @select="selectItem"></song-list>
+        <song-list :songs="songs" @select="selectItem" :rank="rank"></song-list>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <loading></loading>
@@ -30,9 +30,11 @@ import SongList from "base/song-list/index";
 import BScroll from "@better-scroll/core";
 import Loading from "base/loading/index";
 import PullUp from "@better-scroll/pull-up";
+import { playlistMixin } from "common/js/mixin";
 import { mapActions } from "vuex";
 BScroll.use(PullUp);
 export default {
+  mixins: [playlistMixin],
   data() {
     return {
       bscroll: null,
@@ -45,11 +47,16 @@ export default {
       default: ""
     },
     songs: {
-      type: Array
+      type: Array,
+      default: () => []
     },
     title: {
       type: String,
       default: ""
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -127,11 +134,17 @@ export default {
         index: index
       });
     },
-    ...mapActions(["selectPlay","randomPlay"])
+    // mixin 处理 滚动刷新
+    handlePlayList(playlist) {
+      const bottom = playlist.length > 0 ? "60px" : "";
+      this.$refs.list.style.bottom = bottom;
+      if (this.bscroll) this.bscroll.refresh();
+    },
+    ...mapActions(["selectPlay", "randomPlay"])
   },
   // 销毁scroll
   beforeDestroy() {
-    this.bscroll.destroy();
+    if (this.bscroll) this.bscroll.destroy();
   },
   watch: {
     songs() {

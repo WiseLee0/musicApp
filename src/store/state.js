@@ -5,6 +5,8 @@ const state = {
   playList: [], // 播放列表
   sequenceList: [], // 顺序列表
   mode: 0, // 播放模式 顺序播放0 循环单曲1 随机播放2 
-  currentIndex: -1 // 播放索引
+  currentIndex: -1, // 播放索引
+  disc: {}, // 歌单数据
+  topList: {} // 排行榜数据
 }
 export default state
