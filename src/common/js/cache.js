@@ -2,6 +2,7 @@ import storage from 'good-storage'
 
 const SEARCH_KEY = '__search__'
 const PLAY_KEY = '__play__'
+const FAVORITE_KEY = '__favorite__'
 
 function insertArr(arr, val, compare, maxlen) {
     const index = arr.findIndex(compare)
@@ -55,4 +56,26 @@ export function savePlay(song) {
 
 export function getPlay() {
     return storage.get(PLAY_KEY, [])
+}
+
+export function saveFavorite(song) {
+    let songs = storage.get(FAVORITE_KEY, [])
+    insertArr(songs, song, item => {
+        return song.id === item.id
+    }, 50)
+    storage.set(FAVORITE_KEY, songs)
+    return songs
+}
+
+export function deleteFavorite(song) {
+    let songs = storage.get(FAVORITE_KEY, [])
+    deleteArr(songs, item => {
+        return song.id === item.id
+    }, 50)
+    storage.set(FAVORITE_KEY, songs)
+    return songs
+}
+
+export function getFavorite() {
+    return storage.get(FAVORITE_KEY, [])
 }

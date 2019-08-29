@@ -40,6 +40,12 @@ const TopList = (resolve) => {
   })
 }
 
+const UserCenter = (resolve) => {
+  import('components/user-center/index').then((module) => {
+    resolve(module)
+  })
+}
+
 Vue.use(Router)
 
 export default new Router({
@@ -74,5 +80,8 @@ export default new Router({
       path: ':id',
       component: SingerDetail
     }]
+  }, {
+    path: '/user',
+    component: UserCenter
   }]
 })

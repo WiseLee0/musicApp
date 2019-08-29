@@ -1,6 +1,7 @@
 import {
   getSearchHistory,
-  getPlay
+  getPlay,
+  getFavorite
 } from 'common/js/cache'
 const state = {
   singer: {}, // 歌手
@@ -13,6 +14,7 @@ const state = {
   disc: {}, // 歌单数据
   topList: {}, // 排行榜数据
   searchHistory: getSearchHistory(), // 搜索历史
-  playHistory: getPlay() //播放历史
+  playHistory: getPlay(), // 播放历史
+  favoriteList: getFavorite() // 喜欢收藏
 }
 export default state

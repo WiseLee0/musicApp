@@ -39,7 +39,7 @@ export const playerMixin = {
                 "icon-loop" :
                 "icon-random";
         },
-        ...mapGetters(["sequenceList", "currentSong", "mode", "playList"])
+        ...mapGetters(["sequenceList", "currentSong", "mode", "playList", "favoriteList"])
     },
     methods: {
         // 改变播放模式 顺序播放 循环播放 随机播放
@@ -63,12 +63,28 @@ export const playerMixin = {
             });
             this.setIndex(index);
         },
+        // 收藏图标切换
+        getFavoriteIcon(song) {
+            if (this.ifFavorite(song)) return 'icon-favorite'
+            return 'icon-not-favorite'
+        },
+        clickFavorite(song) {
+            if (this.ifFavorite(song)) this.deleteFavoriteList(song)
+            else this.saveFavoriteList(song)
+        },
+        ifFavorite(song) {
+            const index = this.favoriteList.findIndex(item => {
+                return item.id === song.id
+            })
+            return index > -1
+        },
         ...mapMutations({
             setPlaying: "SET_PlAYING",
             setIndex: "SET_CURRENTINDEX",
             setMode: "SET_MODE",
             setPlayList: "SET_PLAYLIST"
-        })
+        }),
+        ...mapActions(['saveFavoriteList', 'deleteFavoriteList'])
     },
 }
 

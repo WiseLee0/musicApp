@@ -68,7 +68,11 @@
               <i class="icon-next" @click="next"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon icon-not-favorite"></i>
+              <i
+                class="icon"
+                :class="getFavoriteIcon(currentSong)"
+                @click="clickFavorite(currentSong)"
+              ></i>
             </div>
           </div>
         </div>
@@ -97,7 +101,7 @@
     <audio
       :src="musicUrl"
       ref="audio"
-      @canplay="ready"
+      @play="ready"
       @error="error"
       @timeupdate="timeUpdate"
       @ended="end"
@@ -135,7 +139,8 @@ export default {
       playingLyric: "",
       touch: {},
       currentShow: "cd",
-      errNum: 0
+      errNum: 0,
+      tiemr: null
     };
   },
   mounted() {
@@ -243,6 +248,7 @@ export default {
       this.currentSong
         .getLyric()
         .then(lyric => {
+          if (this.currentSong.lyric !== lyric) return;
           this.currentLyric = new Lyric(lyric, this._callbackLyric);
           if (this.playing) {
             this.currentLyric.play();
@@ -291,7 +297,6 @@ export default {
       if (!this.songReady) {
         return;
       }
-      this.songReady = false;
       if (0 === this.currentIndex) {
         this.setIndex(this.playList.length - 1);
         return;
@@ -300,13 +305,13 @@ export default {
       if (!this.playing) {
         this.togglePlaying();
       }
+      this.songReady = false;
     },
     // 切换下一首
     next() {
       if (!this.songReady) {
         return;
       }
-      this.songReady = false;
       if (this.playList.length - 1 === this.currentIndex) {
         this.setIndex(0);
         return;
@@ -315,6 +320,7 @@ export default {
       if (!this.playing) {
         this.togglePlaying();
       }
+      this.songReady = false;
     },
     // 打开播放列表
     showPlayList() {
@@ -414,8 +420,17 @@ export default {
           this.errNum = 0;
           this.musicUrl = "http://ws.stream.qqmusic.qq.com/" + vkey;
           this.$nextTick(() => {
-            this.$refs.audio.play();
-            this.getLyric();
+            if (this.currentLyric) {
+              this.currentLyric.stop();
+              this.currentTime = 0;
+              this.playingLyric = "";
+              this.currentLineNum = 0;
+            }
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+              this.$refs.audio.play();
+              this.getLyric();
+            }, 1000);
           });
         } else {
           this.errNum = this.errNum + 1;
