@@ -14,6 +14,7 @@
     "core-js": "^2.6.5",
     "express": "^4.17.1",
     "fastclick": "^1.0.6",
+    "good-storage": "^1.1.0",
     "js-base64": "^2.1.9",
     "jsonp": "^0.2.1",
     "lyric-parser": "^1.0.1",

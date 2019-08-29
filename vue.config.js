@@ -165,6 +165,35 @@ module.exports = {
           res.json(result.data)
         })
       })
+
+      // 获取热门搜索
+      app.get('/api/getHotSearch', function (req, res) {
+        var url = 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg'
+        axios.get(url, {
+          headers: {
+            Origin: 'https://y.qq.com',
+            Referer: 'https://y.qq.com/m/index.html'
+          },
+          params: req.query
+        }).then(result => {
+          res.json(result.data)
+        })
+      })
+
+      // 获取搜索结果
+      app.get('/api/getSearch', function (req, res) {
+        var url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
+        axios.get(url, {
+          headers: {
+            Origin: 'https://y.qq.com',
+            Referer: 'https://y.qq.com/m/index.html'
+          },
+          params: req.query
+        }).then(result => {
+          res.json(result.data)
+        })
+      })
+      
     }
   }
 }

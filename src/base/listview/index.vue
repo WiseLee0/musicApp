@@ -46,111 +46,135 @@
 </template>
 
 <script>
-import BScroll from '@better-scroll/core'
-import { getSingerList } from 'api/singer'
-import Loading from 'base/loading/index'
-import { getData } from 'common/js/dom'
+import BScroll from "@better-scroll/core";
+import { getSingerList } from "api/singer";
+import Loading from "base/loading/index";
+import { getData } from "common/js/dom";
 export default {
-  data () {
+  data() {
     return {
-      letters: ['热', 'A', 'B', 'C', 'D',
-        'E', 'F', 'G', 'H', 'I', 'J',
-        'K', 'L', 'M', 'N', 'O', 'P',
-        'Q', 'R', 'S', 'T', 'U', 'V',
-        'W', 'X', 'Y', 'Z', '#'],
+      letters: [
+        "热",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+        "#"
+      ],
       currentIndex: 0,
       touch: {},
       listShow: true,
       groupShow: false,
       getSingers: [],
       bscroll: null
-    }
+    };
   },
   props: {
     data: {
-      type: Array
+      type: Array,
+      default: () => []
     }
   },
-  mounted () {
-    this._initScroll()
+  mounted() {
+    this._initScroll();
   },
   methods: {
-    _initScroll () {
+    _initScroll() {
       this.bscroll = new BScroll(this.$refs.listview, {
         scrollY: true,
         click: true,
         probeType: 3
-      })
+      });
       // 监听滚轮，控制tagTitle的显示
-      this.bscroll.on('scroll', e => {
+      this.bscroll.on("scroll", e => {
         if (e.y > 0) {
-          this.listShow = false
+          this.listShow = false;
         } else {
-          this.listShow = true
+          this.listShow = true;
         }
-      })
+      });
     },
-    cutTouchStart (e) {
+    cutTouchStart(e) {
       // string 化成 int
-      const clickIndex = getData(e.target, "index") | 0
+      const clickIndex = getData(e.target, "index") | 0;
       // 改变点击的样式
-      this.currentIndex = clickIndex
+      this.currentIndex = clickIndex;
       // 保存点击下的信息
-      this.touch.y1 = e.touches[0].pageY
-      this.touch.index = clickIndex
+      this.touch.y1 = e.touches[0].pageY;
+      this.touch.index = clickIndex;
     },
-    cutTouchMove (e) {
+    cutTouchMove(e) {
       // 获取差值，计算出
-      this.touch.y2 = e.touches[0].pageY
-      const delta = ((this.touch.y2 - this.touch.y1) / 18) | 0
-      this.currentIndex = delta + this.touch.index
+      this.touch.y2 = e.touches[0].pageY;
+      const delta = ((this.touch.y2 - this.touch.y1) / 18) | 0;
+      this.currentIndex = delta + this.touch.index;
       // 滑动显示图标
-      this.groupShow = true
+      this.groupShow = true;
     },
-    cutTouchEnd () {
-      let area = 200 // 选择内地歌手，全部的话部分没有头像图片
-      let clickIndex = this.currentIndex
+    cutTouchEnd() {
+      let area = 200; // 选择内地歌手，全部的话部分没有头像图片
+      let clickIndex = this.currentIndex;
       if (this.currentIndex === 0) {
-        clickIndex = -100
-        area = -100
+        clickIndex = -100;
+        area = -100;
       }
       getSingerList(clickIndex, area).then(res => {
-        this.getSingers = res.singerList.data.singerlist
+        this.getSingers = res.singerList.data.singerlist;
         // 获取数据后重新计算滚轮
         setTimeout(() => {
-          this.scroll.refresh()
+          this.scroll.refresh();
         }, 20);
-      })
-      this.groupShow = false
+      });
+      this.groupShow = false;
     },
-    refresh(){
-      this.bscroll.refresh()
+    refresh() {
+      this.bscroll.refresh();
     },
-    selectItem (item) {
-      this.$emit('select', item)
+    selectItem(item) {
+      this.$emit("select", item);
     }
   },
   computed: {
-    tagTitle () {
-      let title = ''
-      if (this.currentIndex == 0)
-        title = '热门'
-      else
-        title = this.letters[this.currentIndex]
-      return title
+    tagTitle() {
+      let title = "";
+      if (this.currentIndex == 0) title = "热门";
+      else title = this.letters[this.currentIndex];
+      return title;
     },
-    singers () {
-      if (this.getSingers.length > 0) return this.getSingers
-      else return this.data
+    singers() {
+      if (this.getSingers.length > 0) return this.getSingers;
+      else return this.data;
     }
   },
-  beforeDestroy () {
-    this.bscroll.destroy()
+  beforeDestroy() {
+    this.bscroll.destroy();
   },
   components: {
-    Loading,
-  },
-}
+    Loading
+  }
+};
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">

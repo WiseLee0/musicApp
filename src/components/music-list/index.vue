@@ -18,7 +18,7 @@
       <div class="song-list-wrapper">
         <song-list :songs="songs" @select="selectItem" :rank="rank"></song-list>
       </div>
-      <div class="loading-container" v-show="!songs.length">
+      <div class="loading-container" v-show="!songs.length || refresh">
         <loading></loading>
       </div>
     </div>
@@ -57,6 +57,10 @@ export default {
     rank: {
       type: Boolean,
       default: false
+    },
+    refresh: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -65,9 +69,7 @@ export default {
     }
   },
   mounted() {
-    setTimeout(() => {
-      this._initScroll();
-    }, 20);
+    this._initScroll();
   },
   methods: {
     _initScroll() {
@@ -124,8 +126,11 @@ export default {
       this.$refs.bgImage.style.filter = `blur(${blur}px)`;
     },
     pullingUpHandler() {
-      this.$emit("pullData");
-      this.bscroll.finishPullUp();
+      // 防止快速刷新 不是最佳方案
+      if (!this.refresh) {
+        this.$emit("pullData");
+        this.bscroll.finishPullUp();
+      }
     },
     // 子组件的派发事件
     selectItem(song, index) {

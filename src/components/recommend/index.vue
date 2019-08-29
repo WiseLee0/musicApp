@@ -64,9 +64,7 @@ export default {
   },
   mounted() {
     // 初始化滑动组件
-    setTimeout(() => {
-      this._initBscroll();
-    }, 20);
+    this._initBscroll();
   },
   methods: {
     _getBanner() {

@@ -89,7 +89,7 @@
             <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlayList">
           <i class="icon-playlist"></i>
         </div>
       </div>
@@ -102,22 +102,27 @@
       @timeupdate="timeUpdate"
       @ended="end"
     ></audio>
+    <play-list ref="playlist"></play-list>
+    <confirm text="出现资源异常,估计为VIP列表不可播放" ref="confirm" @confirm="errRefresh" @cancel="errRefresh"></confirm>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
+import Confirm from "base/confirm/index";
 import anime from "animejs/lib/anime.es";
 import ProgressBar from "base/progress-bar/index";
 import ProgressCircle from "base/progress-circle/index";
 import { getSongVkey } from "api/singer";
-import { shuffle } from "common/js/util";
 import Lyric from "lyric-parser";
+import PlayList from "components/play-list/index";
 import BScroll from "@better-scroll/core";
 import ScrollBar from "@better-scroll/scroll-bar";
+import { playerMixin } from "common/js/mixin";
 BScroll.use(ScrollBar);
 
 export default {
+  mixins: [playerMixin],
   data() {
     return {
       musicUrl: "",
@@ -129,14 +134,12 @@ export default {
       bscroll: null,
       playingLyric: "",
       touch: {},
-      currentShow: "cd"
+      currentShow: "cd",
+      errNum: 0
     };
   },
   mounted() {
-    setTimeout(() => {
-      // 初始化滑动组件
-      this._initBscroll();
-    }, 20);
+    this._initBscroll();
   },
   computed: {
     // 播放暂停 切换图标
@@ -145,13 +148,6 @@ export default {
     },
     miniIcon() {
       return this.playing ? "icon-pause-mini" : "icon-play-mini";
-    },
-    modeIcon() {
-      return this.mode === 0
-        ? "icon-sequence"
-        : this.mode === 1
-        ? "icon-loop"
-        : "icon-random";
     },
     cdClass() {
       return this.playing ? "play" : "play pause";
@@ -162,17 +158,13 @@ export default {
     percent() {
       return this.currentTime / this.currentSong.duration;
     },
-    ...mapGetters([
-      "fullScreen",
-      "playList",
-      "currentSong",
-      "playing",
-      "currentIndex",
-      "mode",
-      "sequenceList"
-    ])
+    ...mapGetters(["fullScreen", "playing", "currentIndex"])
   },
   methods: {
+    // 歌曲异常刷新
+    errRefresh() {
+      this.$router.go(0);
+    },
     // 横向滑动
     middleTouchStart(e) {
       this.touch.initiated = true;
@@ -256,7 +248,7 @@ export default {
             this.currentLyric.play();
             setTimeout(() => {
               this.bscroll.refresh();
-            }, 100);
+            }, 20);
           }
         })
         .catch(() => {
@@ -290,6 +282,9 @@ export default {
       if (!this.playing) {
         this.togglePlaying();
       }
+      if (this.currentLyric) {
+        this.currentLyric.seek(this.$refs.audio.currentTime * 1000);
+      }
     },
     // 切换上一首
     previous() {
@@ -321,26 +316,9 @@ export default {
         this.togglePlaying();
       }
     },
-    // 改变播放模式 顺序播放 循环播放 随机播放
-    changeMode() {
-      const mode = (this.mode + 1) % 3;
-      this.setMode(mode);
-      let list = null;
-      if (mode === 2) {
-        list = shuffle(this.sequenceList);
-      } else {
-        list = this.sequenceList;
-      }
-      // 这步比较重要，要做一个映射
-      this._resetCurrentIndex(list);
-      this.setPlayList(list);
-    },
-    // 刷新当前index 在随机播放和顺序播放之间
-    _resetCurrentIndex(list) {
-      let index = list.findIndex(item => {
-        return item.id === this.currentSong.id;
-      });
-      this.setIndex(index);
+    // 打开播放列表
+    showPlayList() {
+      this.$refs.playlist.show();
     },
     _getPosAndScale() {
       // mini 唱片的宽度
@@ -392,10 +370,11 @@ export default {
     // 歌曲资源加载成功时
     ready() {
       this.songReady = true;
+      this.savePlayHistory(this.currentSong);
     },
     // 歌曲资源加载失败时
     error() {
-      this.songReady = true;
+      this.songReady = false;
     },
     // 歌曲结束时
     end() {
@@ -420,25 +399,34 @@ export default {
       this.currentTime = e.target.currentTime;
     },
     ...mapMutations({
-      setFullScreen: "SET_FULLSCREEN",
-      setPlaying: "SET_PlAYING",
-      setIndex: "SET_CURRENTINDEX",
-      setMode: "SET_MODE",
-      setPlayList: "SET_PLAYLIST"
-    })
+      setFullScreen: "SET_FULLSCREEN"
+    }),
+    ...mapActions(["savePlayHistory"])
   },
   watch: {
     currentSong(Song, old) {
+      if (!Song.id) return;
       if (Song.id === old.id) return;
       if (this.currentLyric) this.currentLyric.stop();
       // 歌曲变化时，拿取vkey，拼接播放链接
       getSongVkey(Song.mid).then(vkey => {
         if (vkey) {
+          this.errNum = 0;
           this.musicUrl = "http://ws.stream.qqmusic.qq.com/" + vkey;
           this.$nextTick(() => {
             this.$refs.audio.play();
             this.getLyric();
           });
+        } else {
+          this.errNum = this.errNum + 1;
+          if (this.errNum === 3) {
+            this.errNum = 0;
+            this.$refs.confirm.show();
+            this.songReady = false;
+            return;
+          }
+          this.songReady = true;
+          this.next();
         }
       });
     },
@@ -451,7 +439,9 @@ export default {
   },
   components: {
     ProgressBar,
-    ProgressCircle
+    ProgressCircle,
+    Confirm,
+    PlayList
   }
 };
 </script>

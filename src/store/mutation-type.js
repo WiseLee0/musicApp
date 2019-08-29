@@ -15,3 +15,7 @@ export const SET_CURRENTINDEX = 'SET_CURRENTINDEX'
 export const SET_DISC =  'SET_DISC'
 
 export const SET_TOPLIST =  'SET_TOPLIST'
+
+export const SET_SEARCHHISTORY =  'SET_SEARCHHISTORY'
+
+export const SET_PLAYHISTORY =  'SET_PLAYHISTORY'
