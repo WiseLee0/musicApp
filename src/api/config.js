@@ -8,3 +8,10 @@ export const commonParams = {
 export const options = {
   param: 'jsonpCallback'
 }
+
+const urlMap = {
+  development: '/',
+  production: 'http://wiselee.cn/musci/'
+}
+
+export const baseUrl = urlMap[process.env.NODE_ENV]

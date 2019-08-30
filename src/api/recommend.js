@@ -1,11 +1,12 @@
 import axios from 'axios'
 import {
-  commonParams
+  commonParams,
+  baseUrl
 } from './config'
 
 // 获取轮播图的数据
 export function getBanner() {
-  const url = '/api/getBanner'
+  const url = baseUrl + 'api/getBanner'
   const data = Object.assign({}, commonParams, {
     uin: 0,
     platform: 'h5',
@@ -20,7 +21,7 @@ export function getBanner() {
 
 // 获取歌单数据
 export function getSongList() {
-  const url = '/api/getSongList'
+  const url = baseUrl + 'api/getSongList'
   const data = Object.assign({}, commonParams, {
     picmid: 1,
     rnd: Math.random(),
