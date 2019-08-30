@@ -193,8 +193,10 @@ module.exports = {
           res.json(result.data)
         })
       })
-      
+
     }
   },
-  
+  publicPath: process.env.NODE_ENV === 'production' ?
+    '/music/' :
+    '/'
 }
