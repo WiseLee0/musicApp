@@ -43,7 +43,7 @@ export function getSongList() {
 
 // 获取歌单详细歌曲
 export function getDiscSong(disstid) {
-  const url = '/api/getDiscSong'
+  const url =  baseUrl +'api/getDiscSong'
   const data = Object.assign({}, commonParams, {
     type: 1,
     json: 1,

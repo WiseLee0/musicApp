@@ -1,9 +1,10 @@
 import axios from 'axios'
 import {
-    commonParams
+    commonParams,
+    baseUrl
 } from './config'
 export function getLyric(songmid) {
-    const url = '/api/getLyric'
+    const url = baseUrl + 'api/getLyric'
     const data = Object.assign({}, commonParams, {
         '-': 'MusicJsonCallback_lrc',
         pcachetime: 1566728079648,

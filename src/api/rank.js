@@ -2,10 +2,11 @@ import axios from 'axios'
 import jsonp from 'common/js/jsonp'
 import {
     commonParams,
-    options
+    options,
+    baseUrl
 } from './config'
 export function getRank() {
-    const url = '/api/getRank'
+    const url = baseUrl + 'api/getRank'
     return axios.post(url).then(res => {
         return Promise.resolve(res.data.req_0)
     })
@@ -27,7 +28,7 @@ export function getMusicList(topid) {
 
 // 这两个都是最新的接口，但是要配合使用，比较麻烦
 export function getRankSongs(topId) {
-    const url = '/api/getRankSongs'
+    const url = baseUrl + 'api/getRankSongs'
     const data = Object.assign({}, commonParams, {
         '-': 'getUCGI33960706188873346',
         loginUin: 0,
@@ -59,7 +60,7 @@ export function getRankSongs(topId) {
 }
 
 export function getRankDetail(albummid) {
-    const url = '/api/getRankDetail'
+    const url = baseUrl + 'api/getRankDetail'
     const data = Object.assign({}, commonParams, {
         ct: 24,
         albummid: albummid,

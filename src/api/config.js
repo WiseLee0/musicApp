@@ -11,7 +11,7 @@ export const options = {
 
 const urlMap = {
   development: '/',
-  production: 'http://wiselee.cn/musci/'
+  production: 'http://wiselee.cn/music/'
 }
 
 export const baseUrl = urlMap[process.env.NODE_ENV]

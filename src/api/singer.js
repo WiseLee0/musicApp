@@ -1,12 +1,13 @@
 import axios from 'axios'
 import {
-  commonParams
+  commonParams,
+  baseUrl
 } from './config'
 import jsonp from 'common/js/jsonp'
 
 export function getSingerList(letter, area = -100) {
 
-  const url = '/api/getSingerList'
+  const url = baseUrl + 'api/getSingerList'
   const data = Object.assign({}, commonParams, {
     '-': 'getUCGI15774718990432723',
     loginUin: 0,
@@ -39,7 +40,7 @@ export function getSingerList(letter, area = -100) {
   })
 }
 export function getSingerSongs(singer) {
-  const url = '/api/getSingerSongs'
+  const url = baseUrl + 'api/getSingerSongs'
   const data = Object.assign({}, commonParams, {
     uin: 0,
     platform: 'h5page',
@@ -58,7 +59,7 @@ export function getSingerSongs(singer) {
   })
 }
 export function getSongVkey(songmid) {
-  const url = '/api/getSongVkey'
+  const url = baseUrl + 'api/getSongVkey'
   const data = Object.assign({}, commonParams, {
     '-': 'getplaysongvkey06362299039050012',
     loginUin: 0,

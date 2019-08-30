@@ -1,10 +1,11 @@
 import axios from 'axios'
 import {
-    commonParams
+    commonParams,
+    baseUrl
 } from './config'
 
 export function getHotSearch() {
-    const url = '/api/getHotSearch'
+    const url = baseUrl + 'api/getHotSearch'
     const data = Object.assign({}, commonParams, {
         '-': Date.parse(new Date()),
         platform: 'h5',
@@ -18,7 +19,7 @@ export function getHotSearch() {
 }
 
 export function getSearch(query, page = 1, showSinger) {
-    const url = '/api/getSearch'
+    const url = baseUrl + 'api/getSearch'
     const data = Object.assign({}, commonParams, {
         '-': Date.parse(new Date()),
         platform: 'h5',
