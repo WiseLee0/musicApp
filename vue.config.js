@@ -12,7 +12,7 @@ module.exports = {
     }
   },
   devServer: {
-    before(app) {
+    before (app) {
       // 获取轮播图数据
       app.get('/api/getBanner', (req, res) => {
         const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
@@ -84,17 +84,16 @@ module.exports = {
       })
 
       // 获取歌曲的vkey
-      app.get('/api/getSongVkey', function (req, res) {
+      app.get('/api/getSongVkey', async function (req, res) {
         var url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
-        axios.get(url, {
+        const result = await axios.get(url, {
           headers: {
             Origin: 'https://y.qq.com',
             Referer: 'https://y.qq.com/portal/player.html'
           },
           params: req.query
-        }).then(result => {
-          res.json(result.data)
         })
+        res.json(result.data)
       })
 
       // 获取歌词

@@ -1,11 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-const Recommend = (resolve) => {
-  import('components/recommend/index').then((module) => {
-    resolve(module)
-  })
-}
+import Recommend from 'components/recommend/index'
+
 const Rank = (resolve) => {
   import('components/rank/index').then((module) => {
     resolve(module)
