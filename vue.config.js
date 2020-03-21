@@ -13,6 +13,24 @@ module.exports = {
   },
   devServer: {
     before (app) {
+      app.get('/api/speech/metadata', (req, res) => {
+        const url = 'https://wecircle-1258512819.cos.ap-beijing.myqcloud.com/music-speech/metadata.json'
+        axios.get(url).then(result => {
+          res.json(result.data)
+        })
+      })
+      app.get('/api/speech/model', (req, res) => {
+        const url = 'https://wecircle-1258512819.cos.ap-beijing.myqcloud.com/music-speech/model.json'
+        axios.get(url).then(result => {
+          res.json(result.data)
+        })
+      })
+      app.get('/api/speech/data', (req, res) => {
+        const url = 'https://wecircle-1258512819.cos.ap-beijing.myqcloud.com/music-speech/data.bin'
+        axios.get(url).then(result => {
+          res.json(result.data)
+        })
+      })
       // 获取轮播图数据
       app.get('/api/getBanner', (req, res) => {
         const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
