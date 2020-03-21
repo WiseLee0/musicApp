@@ -20,6 +20,13 @@
               v-html="currentSong.name"></h1>
           <h2 class="subtitle"
               v-html="currentSong.singer"></h2>
+          <div class="iconfontSpeech"
+               @click="onSpeech">
+            <img src="./ready.png"
+                 v-show="!speech">
+            <img src="./speech.png"
+                 v-show="speech">
+          </div>
         </div>
         <div class="middle"
              @touchstart.prevent="middleTouchStart"
@@ -92,6 +99,7 @@
                  :class="getFavoriteIcon(currentSong)"
                  @click="clickFavorite(currentSong)"></i>
             </div>
+
           </div>
         </div>
       </div>
@@ -138,6 +146,19 @@
              ref="confirm"
              @confirm="errRefresh"
              @cancel="errRefresh"></confirm>
+    <TopTip ref="topTip"
+            :delay=1000
+            class="topTip">
+      <span class="topTip-start"
+            v-show="speech && initSpeech && !speechCommand">语音模式开启</span>
+      <span class="topTip-end"
+            v-show="!speech && initSpeech">语音模式关闭</span>
+      <span class="topTip-end"
+            v-show="!initSpeech">你需要等一会，语音模型训练完才可以~</span>
+      <span class="topTip-start"
+            v-show="speechCommand">{{speechCommand}}</span>
+    </TopTip>
+    <i class="iconfont icon-icon-test"></i>
   </div>
 </template>
 
@@ -153,6 +174,8 @@ import PlayList from "components/play-list/index";
 import BScroll from "@better-scroll/core";
 import ScrollBar from "@better-scroll/scroll-bar";
 import { playerMixin } from "common/js/mixin";
+import TopTip from 'base/top-tip/index'
+let speechCommands
 BScroll.use(ScrollBar);
 
 export default {
@@ -170,11 +193,16 @@ export default {
       touch: {},
       currentShow: "cd",
       errNum: 0,
-      tiemr: null
+      tiemr: null,
+      speech: false,
+      transferRecognizer: null,
+      initSpeech: false,
+      firstSpeech: false,
+      speechCommand: ''
     };
   },
   mounted () {
-    this._initBscroll();
+    this._initBscroll()
   },
   computed: {
     // 播放暂停 切换图标
@@ -196,6 +224,63 @@ export default {
     ...mapGetters(["fullScreen", "playing", "currentIndex"])
   },
   methods: {
+    async trainSpeech () {
+      const MODEL_PATH = 'http://127.0.0.1:9000/api/speech';
+      const recognizer = speechCommands.create(
+        'BROWSER_FFT',
+        null,
+        MODEL_PATH + '/model.json',
+        MODEL_PATH + '/metadata.json',
+      )
+      await recognizer.ensureModelLoaded();
+      this.transferRecognizer = recognizer.createTransfer('歌曲切换');
+      const res = await fetch(MODEL_PATH + '/data.bin');
+      const arrayBuffer = await res.arrayBuffer();
+      this.transferRecognizer.loadExamples(arrayBuffer);
+      await this.transferRecognizer.train({ epochs: 30 });
+      this.initSpeech = true
+    },
+    async onSpeech () {
+      if (!this.initSpeech) {
+        this.$refs.topTip.show()
+        if (!this.firstSpeech) {
+          this.firstSpeech = true
+          speechCommands = await import('@tensorflow-models/speech-commands');
+          this.trainSpeech()
+        }
+        return
+      }
+      this.speechCommand = ''
+      this.$refs.topTip.show()
+      this.speech = !this.speech
+      if (this.speech) {
+        await this.transferRecognizer.listen(result => {
+          const { scores } = result;
+          const labels = this.transferRecognizer.wordLabels();
+
+          const index = scores.indexOf(Math.max(...scores));
+          const oldCommand = this.speechCommand
+          this.speechCommand = labels[index]
+          if (labels[index] == '上一首') {
+            this.previous()
+          } else if (labels[index] == '下一首') {
+            this.next()
+          } else if (labels[index] == '播放') {
+            if (oldCommand == '播放') return
+            this.togglePlaying();
+          } else if (labels[index] == '暂停') {
+            if (oldCommand == '暂停') return
+            this.togglePlaying();
+          }
+          this.$refs.topTip.show()
+        }, {
+          overlapFactor: 0,
+          probabilityThreshold: 0.85
+        });
+      } else {
+        this.transferRecognizer.stopListening();
+      }
+    },
     // 歌曲异常刷新
     errRefresh () {
       this.$router.go(0);
@@ -430,6 +515,7 @@ export default {
       if (sec < 10) sec = "0" + sec;
       return `${min}:${sec}`;
     },
+
     // 歌曲进度时间
     timeUpdate (e) {
       this.currentTime = e.target.currentTime;
@@ -485,7 +571,8 @@ export default {
     ProgressBar,
     ProgressCircle,
     Confirm,
-    PlayList
+    PlayList,
+    TopTip
   }
 };
 </script>
@@ -722,6 +809,27 @@ export default {
         position absolute
         left 0
         top 0
+.iconfontSpeech
+  position absolute
+  right 10px
+  top 10px
+  border-radius 50%
+  padding 6px
+  display flex
+  justify-content center
+  align-items center
+  background-color rgba(0, 0, 0, 0.3)
+.topTip
+  background-color rgba(0, 0, 0, 0.7)
+  border-radius 0 0 10px 10px
+  display flex
+  justify-content center
+  align-items center
+  height 40px
+.topTip-start
+  color #008c8c
+.topTip-end
+  color rgb(255, 0, 0)
 @keyframes rotate
   0%
     transform rotate(0)
