@@ -225,7 +225,7 @@ export default {
   },
   methods: {
     async trainSpeech () {
-      const MODEL_PATH = 'http://127.0.0.1:9000/api/speech';
+      const MODEL_PATH = 'https://wecircle-1258512819.cos.ap-beijing.myqcloud.com/music-speech';
       const recognizer = speechCommands.create(
         'BROWSER_FFT',
         null,
@@ -244,7 +244,7 @@ export default {
       if (!this.initSpeech) {
         this.$refs.topTip.show()
         if (!this.firstSpeech) {
-          this.firstSpeech = false
+          this.firstSpeech = true
           speechCommands = await import('@tensorflow-models/speech-commands');
           this.trainSpeech()
         }
@@ -259,6 +259,7 @@ export default {
           const labels = this.transferRecognizer.wordLabels();
 
           const index = scores.indexOf(Math.max(...scores));
+
           const oldCommand = this.speechCommand
           this.speechCommand = labels[index]
           if (labels[index] == '上一首') {
