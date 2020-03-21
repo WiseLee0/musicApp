@@ -244,7 +244,7 @@ export default {
       if (!this.initSpeech) {
         this.$refs.topTip.show()
         if (!this.firstSpeech) {
-          this.firstSpeech = true
+          this.firstSpeech = false
           speechCommands = await import('@tensorflow-models/speech-commands');
           this.trainSpeech()
         }
